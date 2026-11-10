@@ -4,6 +4,7 @@
 
 import re
 
+import bcrypt
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -15,30 +16,30 @@ def show_form():
     return render_template("register.html")
 
 
-# POST request, capture and validate
+# POST request, capture, validate, hash, and confirm
 @app.route("/register", methods=["POST"])
 def handle_registration():
-    # Capture the submitted values
+    # Capture values
     full_name = request.form.get("full_name", "").strip()
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "")
     confirm_password = request.form.get("confirm_password", "")
 
-    # Validate the input
+    # Validate input
     errors = []
 
     if not full_name:
-        errors.append("Full name is required.")
+        errors.append("Full name required.")
 
     if not re.fullmatch(r"[A-Za-z0-9_]+", username):
-        errors.append("Username must contain only letters, numbers, and underscores.")
+        errors.append("Username: only letters, numbers, and underscores.")
 
     if (
         len(password) < 8
         or not re.search(r"[A-Za-z]", password)
         or not re.search(r"[0-9]", password)
     ):
-        errors.append("Password must be at least 8 characters long and include both letters and numbers.")
+        errors.append("Password: At least 8 characters long, include both letters and numbers.")
 
     if password != confirm_password:
         errors.append("Password and confirm password must match.")
@@ -51,16 +52,19 @@ def handle_registration():
             username=username,
         )
 
-    # Temporary
+    # Hash the password
+    hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+    # Display confirmation
     return render_template(
         "register.html",
         success=True,
         full_name=full_name,
         username=username,
-        hashed="(not hashed yet)",
+        hashed=hashed,
     )
 
 
+# Run the application
 if __name__ == "__main__":
     app.run(debug=True, port=5002)
-

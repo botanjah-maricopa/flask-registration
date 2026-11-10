@@ -4,8 +4,8 @@ import unittest
 
 from app import app
 
-USERNAME_ERROR = "Username must contain only letters, numbers, and underscores."
-PASSWORD_ERROR = "Password must be at least 8 characters long and include both letters and numbers."
+USERNAME_ERROR = "Username: only letters, numbers, and underscores."
+PASSWORD_ERROR = "Password: At least 8 characters long, include both letters and numbers."
 MISMATCH_ERROR = "Password and confirm password must match."
 
 
